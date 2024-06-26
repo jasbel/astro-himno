@@ -1,0 +1,64 @@
+---
+import Layout from "../layouts/Layout.astro";
+// import { songs } from "../assets/data";
+import dataJson from "../assets/data.json";
+import { uuidv4 } from "../helpers/utils";
+import type { Songs, Song2, Paragraph2 } from "../interfaces/types";
+
+console.log({ dataJson });
+const dataTransform = (dataJson as Songs[]).map((d) => {
+  const paragraphs: Paragraph2[] = d.paragraphs.map((p, idxP) => {
+    const chorusPos: [pos: number, repeat?: number][] = d.chorus
+      .map((c, idxC) => ({
+        pos:  !c.noPositions.find((np) => np === idxP + 1) ? idxC + 1 : 0,
+      }))
+      .map((c) => c.pos)
+      .filter((c) => !!c)
+      .map((c) => [c]);
+    return {
+      id: uuidv4(),
+      paragraph: p.paragraph,
+      chorusPos: chorusPos.length ? chorusPos : [[0]],
+    };
+  });
+
+  const item: Song2 = {
+    id: uuidv4(),
+    code: d.id,
+    title: d.title_es,
+    musicalNote: d.musicalNote,
+    chorus: d.chorus.map((c) => ({ choir: c.choir, id: uuidv4() })),
+    paragraphs,
+  };
+
+  return item;
+});
+---
+
+<Layout>
+  <main>
+    <pre>{JSON.stringify(dataTransform)}</pre>
+  </main>
+  <main>
+    {
+      dataTransform.map((d) => {
+        return (
+          <div>
+            <h1>{d.title}</h1>
+          </div>
+        );
+      })
+    }
+  </main>
+  <main>
+    {
+      dataJson.map((d) => {
+        return (
+          <div>
+            <h1>{d.title_es}</h1>
+          </div>
+        );
+      })
+    }
+  </main>
+</Layout>
