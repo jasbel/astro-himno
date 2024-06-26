@@ -1,0 +1,58 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "@layouts/Layout.astro";
+import type { ISong } from "@interfaces/song-interfaces";
+import dataSong from "@assets/data-song.json";
+
+export const getStaticPaths = (() => {
+  const results: ISong[] = dataSong as unknown as ISong[];
+
+  const maps = results.map(r => {
+    return {
+      params: { title: r.title },
+      props: { title: r.title, id: r.id, paragraphs: r.paragraphs, chorus: r.chorus },
+    };
+  });
+
+  return maps;
+}) satisfies GetStaticPaths;
+
+const { title } = Astro.params;
+const { paragraphs, chorus } = Astro.props;
+
+const getChoir = (pos: number) => {
+  const choir = chorus[pos - 1];
+  return choir?.choir || '';
+};
+---
+
+<Layout title={title}>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div>
+      <a href="/">Regresar</a>
+      <h1 class="text-5xl capitalize">{title}</h1>
+    </div>
+
+    {
+      paragraphs.map(p => {
+        return 
+        <div>
+          {
+            p.chorusPos.map(pr => {
+              return <p>{getChoir(pr[0])}</p>
+            })
+          }
+          <p>{p.paragraph}</p>;
+        </div>
+      })
+    }
+
+    <div></div>
+  </section>
+</Layout>
+
+<style>
+  a {
+    @apply hover:underline text-blue-500;
+  }
+</style>
