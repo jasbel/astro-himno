@@ -32,7 +32,9 @@ const songs: ISong[] = dataSong as unknown as ISong[];
     {
       songs.map((s) => {
         return (
-          <CardSong title={s.title} />
+          <a href={'/himnos/'+s.title}>
+            <CardSong title={s.title} />
+            </a>
         );
       })
     }
