@@ -2,9 +2,10 @@
 import type { GetStaticPaths } from "astro";
 import Layout from "@layouts/Layout.astro";
 import HeaderSong from "@components/HeaderSong.astro";
-import type { IChoir, IParagraph, ISong } from "@interfaces/song-interfaces";
+import type { ISong } from "@interfaces/song-interfaces";
 import dataSong from "@assets/data-song.json";
 import Title from "@components/Title.astro";
+import CardSong from "@components/CardSong.astro";
 
 export const getStaticPaths = (() => {
   const results: ISong[] = dataSong as unknown as ISong[];
@@ -19,40 +20,19 @@ export const getStaticPaths = (() => {
   return maps;
 }) satisfies GetStaticPaths;
 
-interface Props {
-  paragraphs: IParagraph[];
-  chorus: IChoir[];
-}
-
-const { title } = Astro.params;
-const { paragraphs, chorus } = Astro.props;
-
-const getChoir = (pos: number) => {
-  const choir = chorus[pos - 1];
-  return choir?.choir || "";
-};
+const songs: ISong[] = dataSong as unknown as ISong[];
 ---
 
-<Layout title={title}>
+<Layout title={'Himnos Principal'}>
   <section class="mt-10 mx-10 flex flex-col justify-center items-center">
     <HeaderSong />
 
-    <Title title={title!} />
+    <Title title={"Himnos Principal"} />
 
     {
-      paragraphs.map((p) => {
+      songs.map((s) => {
         return (
-          <div>
-            <p class="paragraph">{p.paragraph}</p>
-
-            {p.chorusPos?.length && (
-              <div class="chorus-container">
-                {p.chorusPos.map((pr) => {
-                  return <p class="choir">{getChoir(pr[0])}</p>;
-                })}
-              </div>
-            )}
-          </div>
+          <CardSong title={s.title} />
         );
       })
     }
